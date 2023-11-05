@@ -1,5 +1,4 @@
 import streamlit as st
-?pip install langchain
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import (
     AIMessage,
