@@ -6,8 +6,8 @@ from langchain.schema import (
     HumanMessage,
     SystemMessage
 )
-#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
 
+# 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
 chat = None
 if "OPENAI_API_KEY" not in st.session_state:
     st.session_state["OPENAI_API_KEY"] = ""
@@ -36,15 +36,34 @@ st.title("Welcome to ASL")
 #
 #     ***Environment:*** {st.session_state["PINECONE_ENVIRONMENT"]}
 #     """)
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
+
+
 
 if chat:
     with st.container():
         st.header("Chat with GPT")
-        prompt = st.text_input("Prompt",value="",type="default")
-        asked = st.button("Ask")
-        if asked:
+
+        for message in st.session_state["messages"]:
+            if isinstance(message, HumanMessage):
+                with st.chat_message("user"):
+                    st.markdown(message.content)
+            elif isinstance(message, AIMessage):
+                with st.chat_message("Assistant"):
+                    st.markdown(message.content)
+
+        prompt = st.chat_input("Type something")
+
+        if prompt:
+            st.session_state["messages"].append(HumanMessage(content=prompt))
+            with st.chat_message("User"):
+                st.markdown(prompt)
             ai_message = chat([HumanMessage(content=prompt)])
-            st.write(ai_message.content)
+            st.session_state["messages"].append(ai_message)
+            with st.chat_message("Assistant"):
+                st.markdown(ai_message.content)
+
 
 else:
     with st.container():
